@@ -1,0 +1,507 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>分类管理 - 博客管理系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="admin-container">
+    <!-- 侧边栏 -->
+    <div class="admin-sidebar">
+        <div class="admin-logo">
+            <h2><i class="fas fa-blog"></i> 博客管理</h2>
+        </div>
+        <div class="admin-nav">
+            <a href="dashboard.html" class="admin-nav-item" title="仪表盘">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>仪表盘</span>
+            </a>
+            <a href="posts-simplified.html" class="admin-nav-item" title="文章管理">
+                <i class="fas fa-file-alt"></i>
+                <span>文章管理</span>
+            </a>
+            <a href="categories.html" class="admin-nav-item active" title="分类管理">
+                <i class="fas fa-folder"></i>
+                <span>分类管理</span>
+            </a>
+            <a href="tags.html" class="admin-nav-item" title="标签管理">
+                <i class="fas fa-tags"></i>
+                <span>标签管理</span>
+            </a>
+            <a href="comments.html" class="admin-nav-item" title="评论管理">
+                <i class="fas fa-comments"></i>
+                <span>评论管理</span>
+            </a>
+            <a href="users.html" class="admin-nav-item" title="用户管理">
+                <i class="fas fa-users"></i>
+                <span>用户管理</span>
+            </a>
+            <a href="settings.html" class="admin-nav-item" title="系统设置">
+                <i class="fas fa-cog"></i>
+                <span>系统设置</span>
+            </a>
+        </div>
+    </div>
+    <!-- 主内容区 -->
+    <div class="admin-content">
+        <!-- 顶部栏 -->
+        <div class="admin-topbar">
+            <div class="admin-topbar-left">
+                <h2><i class="fas fa-folder"></i> 分类管理</h2>
+            </div>
+            <div class="admin-topbar-right">
+                <div class="admin-user">
+                    <img src="https://via.placeholder.com/36" alt="管理员头像" class="admin-user-avatar">
+                    <span class="admin-user-name">管理员</span>
+                    <i class="fas fa-chevron-down"></i>
+                    <div class="admin-user-dropdown">
+                        <a href="profile.html"><i class="fas fa-user"></i> 个人资料</a>
+                        <a href="settings.html"><i class="fas fa-cog"></i> 系统设置</a>
+                        <a href="../index.html"><i class="fas fa-external-link-alt"></i> 查看网站</a>
+                        <a href="login.html"><i class="fas fa-sign-out-alt"></i> 退出登录</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 业务内容区 -->
+        <!-- 工具栏 -->
+        <div class="page-header">
+            <div class="page-title">
+                <h3>分类管理</h3>
+                <p class="text-secondary">管理博客文章的分类信息</p>
+            </div>
+            <div class="page-actions">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" class="form-control" placeholder="搜索分类名称或描述..." />
+                    <button class="btn btn-icon" onclick="searchCategories()" title="搜索">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                <button class="btn btn-primary btn-with-icon" onclick="showCategoryModal()" title="添加新分类">
+                    <i class="fas fa-plus"></i>
+                    <span>添加分类</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="stat-cards">
+            <div class="stat-card">
+                <div class="stat-card-content">
+                    <h4>总分类数</h4>
+                    <div class="stat-value" id="totalCategories">-</div>
+                </div>
+                <div class="stat-card-icon">
+                    <i class="fas fa-folder"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-content">
+                    <h4>今日新增</h4>
+                    <div class="stat-value" id="todayNewCategories">-</div>
+                </div>
+                <div class="stat-card-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-content">
+                    <h4>文章数最多</h4>
+                    <div class="stat-value" id="mostUsedCategory">-</div>
+                </div>
+                <div class="stat-card-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- 加载状态和错误提示 -->
+        <div id="loading" class="loading-state" style="display: none;">
+            <div class="loader"></div>
+            <span>加载中...</span>
+        </div>
+        <div id="error" class="error-state" style="display: none;"></div>
+
+        <!-- 分类列表 -->
+        <div class="card">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width:30%">分类名称 / 别名</th>
+                            <th style="width:40%">描述信息</th>
+                            <th style="width:20%">创建时间</th>
+                            <th style="width:10%">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoryTableBody">
+                        <tr class="table-loading">
+                            <td colspan="4">
+                                <div class="loading-state">
+                                    <div class="loader"></div>
+                                    <span>正在加载数据...</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <div class="table-info">
+                    共 <span id="totalItems">0</span> 条数据
+                </div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+        <!-- 分页控件 -->
+        <div class="pagination" id="pagination"></div>
+    </div>
+</div>
+<!-- 分类编辑弹窗 -->
+<div id="categoryModal" class="modal">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modalTitle">添加分类</h3>
+            <span class="close-modal" onclick="closeCategoryModal()">&times;</span>
+        </div>
+        <form id="categoryForm" onsubmit="saveCategory(event)">
+            <div class="modal-body">
+                <input type="hidden" id="categoryId">
+                <div class="form-group">
+                    <label for="categoryName">分类名称</label>
+                    <input type="text" id="categoryName" class="form-control" required autocomplete="off" placeholder="输入分类名称">
+                </div>
+                <div class="form-group">
+                    <label for="categorySlug">URL别名</label>
+                    <input type="text" id="categorySlug" class="form-control" required autocomplete="off" placeholder="分类的URL标识">
+                </div>
+                <div class="form-group">
+                    <label for="categoryDescription">描述</label>
+                    <textarea id="categoryDescription" class="form-control" rows="3" placeholder="分类的简要描述"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="parentCategory">父分类</label>
+                    <select id="parentCategory" class="form-control">
+                        <option value="">无</option>
+                    </select>
+                </div>
+                <div id="modalError" class="error-state" style="display:none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">
+                    <i class="fas fa-times"></i>
+                    取消
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    保存
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="../js/utils.js"></script>
+<script>
+let editingId = null;
+let currentPage = 1;
+let pageSize = 10;
+let totalPages = 0;
+let loading = false;
+let slugManually = false; // 标记slug是否被手动修改
+
+// 显示加载状态
+function showLoading() {
+    loading = true;
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("error").style.display = "none";
+}
+
+// 隐藏加载状态
+function hideLoading() {
+    loading = false;
+    document.getElementById("loading").style.display = "none";
+}
+
+// 显示错误信息
+function showError(message) {
+    const errorDiv = document.getElementById("error");
+    errorDiv.textContent = message;
+    errorDiv.style.display = "block";
+    document.getElementById("loading").style.display = "none";
+}
+
+// 加载分类列表
+async function loadCategories(page) {
+    if (loading) return;
+    
+    showLoading();
+    try {
+        currentPage = page || 1;
+        const keyword = document.getElementById("searchInput").value.trim();
+        let url = `/api/categories/page?page=${currentPage}&size=${pageSize}`;
+        if (keyword) {
+            url += `&searchTerm=${encodeURIComponent(keyword)}`;
+        }
+
+        const res = await api.get(url);
+        if (res.code === 0 && res.data) {
+            const tbody = document.getElementById("categoryTableBody");
+            tbody.innerHTML = "";
+            totalPages = res.data.totalPages;
+
+            if (!res.data.content || res.data.content.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">暂无数据</td></tr>';
+                return;
+            }
+
+            res.data.content.forEach(cat => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="cell-primary">
+                            <div class="cell-title">${escapeHtml(cat.name)}</div>
+                            <div class="cell-subtitle">${cat.slug}</div>
+                        </td>
+                        <td>
+                            <div class="cell-content">${escapeHtml(cat.description || "-")}</div>
+                        </td>
+                        <td>
+                            <div class="cell-meta">
+                                <i class="fas fa-calendar-alt"></i>
+                                ${formatDate(cat.createdAt)}
+                            </div>
+                        </td>
+                        <td class="cell-actions">
+                            <button class="btn btn-icon" onclick='editCategory(${JSON.stringify(cat)})' title="编辑分类">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-icon btn-danger" onclick="deleteCategory(${cat.id})" title="删除分类">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            updatePagination();
+        } else {
+            throw new Error(res.message || "加载失败");
+        }
+    } catch (error) {
+        console.error("加载分类失败:", error);
+        showError(error.message || "加载失败，请稍后重试");
+    } finally {
+        hideLoading();
+    }
+}
+
+// 更新分页控件
+function updatePagination() {
+    const pagination = document.getElementById("pagination");
+    let html = "";
+    
+    if (totalPages > 1) {
+        // 上一页按钮
+        html += `
+            <button class="btn ${currentPage === 1 ? 'disabled' : ''}" 
+                    onclick="${currentPage > 1 ? `loadCategories(${currentPage - 1})` : ''}"
+                    title="上一页">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        `;
+        
+        // 页码按钮
+        if (totalPages <= 7) {
+            // 页数较少时显示所有页码
+            for (let i = 1; i <= totalPages; i++) {
+                html += `
+                    <button class="btn ${i === currentPage ? 'active' : ''}"
+                            onclick="loadCategories(${i})"
+                            title="第${i}页">
+                        ${i}
+                    </button>
+                `;
+            }
+        } else {
+            // 页数较多时显示部分页码
+            const showPages = [1];
+            if (currentPage > 3) showPages.push('...');
+            
+            // 当前页附近的页码
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(currentPage + 1, totalPages - 1); i++) {
+                showPages.push(i);
+            }
+            
+            if (currentPage < totalPages - 2) showPages.push('...');
+            showPages.push(totalPages);
+            
+            // 生成页码按钮
+            showPages.forEach(page => {
+                if (page === '...') {
+                    html += `<button class="btn disabled">...</button>`;
+                } else {
+                    html += `
+                        <button class="btn ${page === currentPage ? 'active' : ''}"
+                                onclick="loadCategories(${page})"
+                                title="第${page}页">
+                            ${page}
+                        </button>
+                    `;
+                }
+            });
+        }
+        
+        // 下一页按钮
+        html += `
+            <button class="btn ${currentPage === totalPages ? 'disabled' : ''}"
+                    onclick="${currentPage < totalPages ? `loadCategories(${currentPage + 1})` : ''}"
+                    title="下一页">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        `;
+    }
+    
+    pagination.innerHTML = html;
+}
+
+// 打开分类弹窗（新增/编辑）
+function showCategoryModal(category = null) {
+    document.getElementById("categoryModal").style.display = "flex";
+    document.getElementById("modalTitle").textContent = category ? "编辑分类" : "添加分类";
+    document.getElementById("categoryId").value = category ? category.id : "";
+    document.getElementById("categoryName").value = category ? category.name : "";
+    document.getElementById("categorySlug").value = category ? category.slug : "";
+    document.getElementById("categoryDescription").value = category ? (category.description || "") : "";
+    document.getElementById("modalError").style.display = "none";
+    document.getElementById("modalError").textContent = "";
+    slugManually = false;
+    // 加载父分类下拉
+    loadParentCategories(category ? category.id : null, category ? category.parentId : null);
+    // 监听slug输入
+    const slugInput = document.getElementById("categorySlug");
+    slugInput.oninput = () => { slugManually = true; };
+    // 监听名称输入自动生成slug
+    const nameInput = document.getElementById("categoryName");
+    nameInput.oninput = () => {
+        if (!slugManually) {
+            slugInput.value = nameInput.value.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-]/g, "");
+        }
+    };
+    // 支持ESC关闭
+    document.onkeydown = function(e) {
+        if (e.key === "Escape") closeCategoryModal();
+    };
+}
+
+// 关闭弹窗
+function closeCategoryModal() {
+    document.getElementById("categoryModal").style.display = "none";
+    document.onkeydown = null;
+}
+
+// 点击遮罩关闭
+window.onclick = function(event) {
+    const modal = document.getElementById("categoryModal");
+    if (event.target === modal) closeCategoryModal();
+};
+
+// 加载父分类下拉（排除自身）
+async function loadParentCategories(selfId, selectedId) {
+    try {
+        const res = await api.get("/api/categories/all");
+        const select = document.getElementById("parentCategory");
+        select.innerHTML = '<option value="">无</option>';
+        if (res.code === 0 && Array.isArray(res.data)) {
+            res.data.forEach(cat => {
+                if (!selfId || cat.id !== selfId) {
+                    select.innerHTML += `<option value="${cat.id}" ${selectedId && cat.id === selectedId ? 'selected' : ''}>${escapeHtml(cat.name)}</option>`;
+                }
+            });
+        }
+    } catch (e) {
+        // 忽略父分类加载失败
+    }
+}
+
+// 保存分类
+async function saveCategory(event) {
+    event.preventDefault();
+    const id = document.getElementById("categoryId").value;
+    const name = document.getElementById("categoryName").value.trim();
+    const slug = document.getElementById("categorySlug").value.trim();
+    const description = document.getElementById("categoryDescription").value.trim();
+    const parentId = document.getElementById("parentCategory").value || null;
+    const modalError = document.getElementById("modalError");
+    if (!name) {
+        modalError.textContent = "请输入分类名称";
+        modalError.style.display = "block";
+        return;
+    }
+    if (!slug) {
+        modalError.textContent = "请输入URL别名";
+        modalError.style.display = "block";
+        return;
+    }
+    try {
+        const data = { name, slug, description, parentId };
+        let res;
+        if (id) {
+            res = await api.put(`/api/categories/${id}`, { ...data, id });
+        } else {
+            res = await api.post("/api/categories", data);
+        }
+        if (res.code === 0) {
+            closeCategoryModal();
+            loadCategories(currentPage);
+        } else {
+            throw new Error(res.message || "保存失败");
+        }
+    } catch (error) {
+        modalError.textContent = error.message || "保存失败，请稍后重试";
+        modalError.style.display = "block";
+    }
+}
+
+// 编辑分类
+function editCategory(category) {
+    showCategoryModal(category);
+}
+
+// 删除分类
+async function deleteCategory(id) {
+    if (!confirm("确定要删除这个分类吗？此操作不可恢复。")) return;
+    
+    try {
+        const res = await api.delete(`/api/categories/${id}`);
+        if (res.code === 0) {
+            const currentCount = document.querySelectorAll("#categoryTableBody tr").length;
+            if (currentCount === 1 && currentPage > 1) {
+                loadCategories(currentPage - 1);
+            } else {
+                loadCategories(currentPage);
+            }
+        } else {
+            throw new Error(res.message || "删除失败");
+        }
+    } catch (error) {
+        showError(error.message || "删除失败，请稍后重试");
+    }
+}
+
+// 初始化
+document.addEventListener("DOMContentLoaded", () => {
+    loadCategories(1);
+    
+    // 添加搜索框回车事件
+    document.getElementById("searchInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            loadCategories(1);
+        }
+    });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!-- 管理后台公共侧边栏 -->
+<div class="admin-sidebar">
+    <div class="admin-logo">
+        <h2>博客管理</h2>
+    </div>
+    <nav class="admin-nav">
+        <a href="dashboard.html" class="admin-nav-item" id="nav-dashboard">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </a>
+        <a href="posts-simplified.html" class="admin-nav-item" id="nav-posts">
+            <i class="fas fa-file-alt"></i>
+            <span>文章管理</span>
+        </a>
+        <a href="comments.html" class="admin-nav-item" id="nav-comments">
+            <i class="fas fa-comments"></i>
+            <span>评论管理</span>
+        </a>
+        <a href="categories.html" class="admin-nav-item" id="nav-categories">
+            <i class="fas fa-folder"></i>
+            <span>分类管理</span>
+        </a>
+        <a href="tags.html" class="admin-nav-item" id="nav-tags">
+            <i class="fas fa-tags"></i>
+            <span>标签管理</span>
+        </a>
+        <a href="users.html" class="admin-nav-item" id="nav-users">
+            <i class="fas fa-users"></i>
+            <span>用户管理</span>
+        </a>
+        <a href="settings.html" class="admin-nav-item" id="nav-settings">
+            <i class="fas fa-cog"></i>
+            <span>系统设置</span>
+        </a>
+    </nav>
+</div>
+
+<script>
+// 设置当前页面的导航项为激活状态
+document.addEventListener('DOMContentLoaded', () => {
+    const currentPage = window.location.pathname.split('/').pop();
+    const navId = 'nav-' + currentPage.split('.')[0];
+    document.getElementById(navId)?.classList.add('active');
+});
+</script>

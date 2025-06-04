@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理 - 博客管理系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="admin-container">
+    <!-- 侧边栏 -->
+    <div class="admin-sidebar">
+        <div class="admin-logo">
+            <h2>博客管理系统</h2>
+        </div>
+        <div class="admin-nav">
+            <a href="dashboard.html" class="admin-nav-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>仪表盘</span>
+            </a>
+            <a href="posts.html" class="admin-nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>文章管理</span>
+            </a>
+            <a href="categories.html" class="admin-nav-item">
+                <i class="fas fa-folder"></i>
+                <span>分类管理</span>
+            </a>
+            <a href="tags.html" class="admin-nav-item">
+                <i class="fas fa-tags"></i>
+                <span>标签管理</span>
+            </a>
+            <a href="comments.html" class="admin-nav-item">
+                <i class="fas fa-comments"></i>
+                <span>评论管理</span>
+            </a>
+            <a href="users.html" class="admin-nav-item active">
+                <i class="fas fa-users"></i>
+                <span>用户管理</span>
+            </a>
+            <a href="settings.html" class="admin-nav-item">
+                <i class="fas fa-cog"></i>
+                <span>系统设置</span>
+            </a>
+        </div>
+    </div>
+    <!-- 主内容区 -->
+    <div class="admin-content">
+        <!-- 顶部栏 -->
+        <div class="admin-topbar">
+            <div class="admin-topbar-left">
+                <h2><i class="fas fa-users"></i> 用户管理</h2>
+            </div>
+            <div class="admin-topbar-right">
+                <div class="admin-user">
+                    <img src="https://via.placeholder.com/36" alt="管理员头像" class="admin-user-avatar">
+                    <span class="admin-user-name">管理员</span>
+                    <i class="fas fa-chevron-down" style="margin-left: 5px;"></i>
+                    <div class="admin-user-dropdown">
+                        <a href="profile.html"><i class="fas fa-user"></i> 个人资料</a>
+                        <a href="settings.html"><i class="fas fa-cog"></i> 系统设置</a>
+                        <a href="../index.html"><i class="fas fa-external-link-alt"></i> 查看网站</a>
+                        <a href="login.html"><i class="fas fa-sign-out-alt"></i> 退出登录</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 统计卡片区 -->
+        <div class="stats-cards" style="margin-bottom:24px;">
+            <div class="stats-card total">
+                <div class="stats-card-content">
+                    <div class="stats-card-value" id="userTotalCount">0</div>
+                    <div class="stats-card-title">总用户数</div>
+                </div>
+                <div class="stats-card-icon"><i class="fas fa-users"></i></div>
+            </div>
+            <div class="stats-card admin">
+                <div class="stats-card-content">
+                    <div class="stats-card-value" id="adminCount">0</div>
+                    <div class="stats-card-title">管理员</div>
+                </div>
+                <div class="stats-card-icon"><i class="fas fa-user-shield"></i></div>
+            </div>
+            <div class="stats-card editor">
+                <div class="stats-card-content">
+                    <div class="stats-card-value" id="editorCount">0</div>
+                    <div class="stats-card-title">编辑</div>
+                </div>
+                <div class="stats-card-icon"><i class="fas fa-user-edit"></i></div>
+            </div>
+            <div class="stats-card subscriber">
+                <div class="stats-card-content">
+                    <div class="stats-card-value" id="subscriberCount">0</div>
+                    <div class="stats-card-title">普通用户</div>
+                </div>
+                <div class="stats-card-icon"><i class="fas fa-user"></i></div>
+            </div>
+            <div class="stats-card active">
+                <div class="stats-card-content">
+                    <div class="stats-card-value" id="activeCount">0</div>
+                    <div class="stats-card-title">活跃用户</div>
+                </div>
+                <div class="stats-card-icon"><i class="fas fa-user-check"></i></div>
+            </div>
+        </div>
+        <!-- 业务内容区 -->
+        <div style="background:#fff; border-radius:12px; box-shadow:0 4px 24px rgba(30,136,229,0.08); padding:30px 40px; margin-bottom:30px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+                <div style="font-size:20px; color:#1976d2; font-weight:600;"><i class="fas fa-users"></i> 用户管理</div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="搜索用户名/邮箱/角色/状态..." oninput="loadUsers(1)">
+                    <button onclick="loadUsers(1)"><i class="fas fa-search"></i> 搜索</button>
+                </div>
+            </div>
+            <table style="width:100%; border-collapse:collapse; margin-top:18px;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用户名</th>
+                        <th>邮箱</th>
+                        <th>角色</th>
+                        <th>状态</th>
+                        <th>注册时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody"></tbody>
+            </table>
+            <div class="pagination" id="pagination"></div>
+        </div>
+        <!-- 编辑弹窗 -->
+        <div class="modal" id="userModal">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeUserModal()">&times;</span>
+                <h3 id="userModalTitle">编辑用户</h3>
+                <div class="error" id="userModalError"></div>
+                <div class="form-group">
+                    <label for="modalUsername">用户名</label>
+                    <input type="text" id="modalUsername" placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label for="modalEmail">邮箱</label>
+                    <input type="email" id="modalEmail" placeholder="请输入邮箱">
+                </div>
+                <div class="form-group">
+                    <label for="modalRole">角色</label>
+                    <select id="modalRole">
+                        <option value="USER">普通用户</option>
+                        <option value="ADMIN">管理员</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="modalStatus">状态</label>
+                    <select id="modalStatus">
+                        <option value="true">正常</option>
+                        <option value="false">禁用</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button class="save-btn" onclick="saveUser()">保存</button>
+                    <button class="cancel-btn" onclick="closeUserModal()">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+let currentPage = 1;
+let pageSize = 10;
+let editingUserId = null;
+// 模糊搜索支持：用户名、邮箱、角色、状态
+function loadUsers(page) {
+    currentPage = page;
+    const keyword = document.getElementById('searchInput').value.trim();
+    let url = `/api/users/page?page=${page}&size=${pageSize}`;
+    if (keyword) url += `&keyword=${encodeURIComponent(keyword)}`;
+    fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } })
+        .then(res => res.json()).then(res => {
+        if (res.code === 0) {
+            const data = res.data;
+            const tbody = document.getElementById('userTableBody');
+            tbody.innerHTML = '';
+            data.content.forEach(u => {
+                tbody.innerHTML += `<tr>
+                    <td>${u.id}</td>
+                    <td>${u.username}</td>
+                    <td>${u.email}</td>
+                    <td>${u.role}</td>
+                    <td>${u.isActive ? '正常' : '禁用'}</td>
+                    <td>${u.createdAt ? u.createdAt.replace('T',' ').substring(0,19) : ''}</td>
+                    <td class='actions'>
+                        <button onclick='openUserModal(${JSON.stringify(u)})'><i class='fas fa-edit'></i> 编辑</button>
+                        <button class='delete' onclick='deleteUser(${u.id})'><i class='fas fa-trash'></i> 删除</button>
+                    </td>
+                </tr>`;
+            });
+            // 分页
+            let pagHtml = '';
+            for(let i=1;i<=data.totalPages;i++){
+                pagHtml += `<button onclick='loadUsers(${i})' class='${i===data.number+1?"active":""}'>${i}</button>`;
+            }
+            document.getElementById('pagination').innerHTML = pagHtml;
+        }
+    });
+}
+function deleteUser(id) {
+    if (!confirm('确定要删除该用户吗？')) return;
+    fetch(`/api/users/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    }).then(res => res.json()).then(res => {
+        if (res.code === 0) loadUsers(currentPage);
+    });
+}
+function openUserModal(user) {
+    editingUserId = user.id;
+    document.getElementById('userModalTitle').textContent = '编辑用户';
+    document.getElementById('modalUsername').value = user.username;
+    document.getElementById('modalEmail').value = user.email;
+    document.getElementById('modalRole').value = user.role;
+    document.getElementById('modalStatus').value = user.isActive ? 'true' : 'false';
+    document.getElementById('userModalError').textContent = '';
+    document.getElementById('userModal').style.display = 'flex';
+}
+function closeUserModal() {
+    document.getElementById('userModal').style.display = 'none';
+    editingUserId = null;
+}
+async function saveUser() {
+    const errorDiv = document.getElementById('userModalError');
+    const username = document.getElementById('modalUsername').value.trim();
+    const email = document.getElementById('modalEmail').value.trim();
+    const role = document.getElementById('modalRole').value;
+    const isActive = document.getElementById('modalStatus').value === 'true';
+    if (!username || !email) {
+        errorDiv.textContent = '用户名和邮箱不能为空';
+        return;
+    }
+    try {
+        const res = await fetch(`/api/users/${editingUserId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            },
+            body: JSON.stringify({ username, email, role, isActive })
+        });
+        const data = await res.json();
+        if (data.code === 0) {
+            closeUserModal();
+            loadUsers(currentPage);
+        } else {
+            errorDiv.textContent = data.msg || '保存失败';
+        }
+    } catch (e) {
+        errorDiv.textContent = '保存失败，请稍后重试';
+    }
+}
+// 加载用户统计数据
+async function loadUserStats() {
+    try {
+        const res = await fetch('/api/users/stats');
+        const data = await res.json();
+        if(data.code === 0 && data.data) {
+            document.getElementById('userTotalCount').textContent = data.data.totalCount || 0;
+            document.getElementById('adminCount').textContent = data.data.adminCount || 0;
+            document.getElementById('editorCount').textContent = data.data.editorCount || 0;
+            document.getElementById('subscriberCount').textContent = data.data.subscriberCount || 0;
+            document.getElementById('activeCount').textContent = data.data.activeCount || 0;
+        }
+    } catch(e) {
+        // 可选：展示错误提示
+    }
+}
+document.addEventListener('DOMContentLoaded', function() {
+    loadUserStats();
+});
+window.onload = () => loadUsers(1);
+</script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>文章管理 - 博客管理系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="admin-container">
+    <!-- 侧边栏 -->
+    <div class="admin-sidebar">
+        <div class="admin-logo">
+            <h2>博客管理系统</h2>
+        </div>
+        <div class="admin-nav">
+            <a href="dashboard.html" class="admin-nav-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>仪表盘</span>
+            </a>
+            <a href="posts-simplified.html" class="admin-nav-item active">
+                <i class="fas fa-file-alt"></i>
+                <span>文章管理</span>
+            </a>
+            <a href="categories.html" class="admin-nav-item">
+                <i class="fas fa-folder"></i>
+                <span>分类管理</span>
+            </a>
+            <a href="tags.html" class="admin-nav-item">
+                <i class="fas fa-tags"></i>
+                <span>标签管理</span>
+            </a>
+            <a href="comments.html" class="admin-nav-item">
+                <i class="fas fa-comments"></i>
+                <span>评论管理</span>
+            </a>
+            <a href="users.html" class="admin-nav-item">
+                <i class="fas fa-users"></i>
+                <span>用户管理</span>
+            </a>
+            <a href="settings.html" class="admin-nav-item">
+                <i class="fas fa-cog"></i>
+                <span>系统设置</span>
+            </a>
+        </div>
+    </div>
+    <!-- 主内容区 -->
+    <div class="admin-content">
+        <!-- 顶部栏 -->
+        <div class="admin-topbar">
+            <div class="admin-topbar-left">
+                <h2><i class="fas fa-file-alt"></i> 文章管理</h2>
+            </div>
+            <div class="admin-topbar-right">
+                <div class="admin-user">
+                    <img src="https://via.placeholder.com/36" alt="管理员头像" class="admin-user-avatar">
+                    <span class="admin-user-name">管理员</span>
+                    <i class="fas fa-chevron-down"></i>
+                    <div class="admin-user-dropdown">
+                        <a href="profile.html"><i class="fas fa-user"></i> 个人资料</a>
+                        <a href="settings.html"><i class="fas fa-cog"></i> 系统设置</a>
+                        <a href="../index.html"><i class="fas fa-external-link-alt"></i> 查看网站</a>
+                        <a href="login.html"><i class="fas fa-sign-out-alt"></i> 退出登录</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 统计卡片 -->
+        <div class="stat-cards">
+            <div class="stat-card">
+                <div class="stat-card-icon published">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-card-info">
+                    <div class="stat-card-title">已发布文章</div>
+                    <div class="stat-card-value" id="publishedCount">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon draft">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <div class="stat-card-info">
+                    <div class="stat-card-title">草稿箱</div>
+                    <div class="stat-card-value" id="draftCount">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-card-info">
+                    <div class="stat-card-title">待审核</div>
+                    <div class="stat-card-value" id="pendingCount">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon total">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="stat-card-info">
+                    <div class="stat-card-title">文章总数</div>
+                    <div class="stat-card-value" id="totalCount">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 工具栏 -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="搜索文章标题..." />
+                </div>
+            </div>
+            <div class="toolbar-right">
+                <button class="btn btn-primary" onclick="location.href='new-post.html'">
+                    <i class="fas fa-plus"></i> 新建文章
+                </button>
+                <button class="btn btn-danger" onclick="deleteSelectedPosts()" id="batchDeleteBtn" style="display: none;">
+                    <i class="fas fa-trash"></i> 批量删除
+                </button>
+            </div>
+        </div>
+
+        <div id="loading" class="loading-state" style="display: none;">
+            <i class="fas fa-spinner fa-spin"></i> 加载中...
+        </div>
+        <div id="error" class="error-state" style="display: none;"></div>        <div class="card table-card">
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th width="40" class="text-center">
+                                <input type="checkbox" id="selectAll" onclick="toggleSelectAll()" class="table-checkbox" />
+                            </th>
+                            <th>标题</th>
+                            <th width="120">作者</th>
+                            <th width="100">状态</th>
+                            <th width="160">发布时间</th>
+                            <th width="160">更新时间</th>
+                            <th width="150" class="text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="postsTableBody"></tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <div class="table-info">
+                    共 <span id="totalEntries">0</span> 条记录
+                </div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 文章编辑弹窗 -->
+<div class="edit-modal" id="editPostModal">
+    <div class="edit-modal-content">
+        <span class="close-modal" onclick="closeEditPostModal()">&times;</span>
+        <h3>编辑文章</h3>
+        <div class="error" id="editPostError"></div>
+        <div class="form-group">
+            <label for="editPostTitle">标题</label>
+            <input type="text" id="editPostTitle">
+        </div>
+        <div class="form-group">
+            <label for="editPostContent">内容</label>
+            <textarea id="editPostContent"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="editPostStatus">状态</label>
+            <select id="editPostStatus">
+                <option value="draft">草稿</option>
+                <option value="published">已发布</option>
+                <option value="pending">待审核</option>
+                <option value="trashed">已删除</option>
+            </select>
+        </div>
+        <div class="edit-modal-actions">
+            <button class="save-btn" onclick="saveEditPost()">保存</button>
+            <button class="cancel-btn" onclick="closeEditPostModal()">取消</button>
+        </div>
+    </div>
+</div>
+<script src="../js/utils.js"></script>
+<script>
+    let currentPage = 1;
+    let pageSize = 10;
+    let totalPages = 1;
+    let selectedPosts = new Set();
+    let editingPostId = null;
+    let loading = false;
+
+    // 页面加载完成后加载文章列表    document.addEventListener('DOMContentLoaded', () => {
+        loadPosts();
+        updateStatistics();
+        
+        // 添加搜索框事件监听
+        const searchInput = document.getElementById('searchInput');
+        let searchTimeout;
+        
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadPosts();
+            }, 500);
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                clearTimeout(searchTimeout);
+                loadPosts();
+            }
+        });
+    });
+
+    // 加载文章列表
+    async function loadPosts(page = 1) {
+        if (loading) return;
+        
+        const loadingElement = document.getElementById("loading");
+        const errorElement = document.getElementById("error");
+        const tableBody = document.getElementById("postsTableBody");
+        const searchTerm = document.getElementById("searchInput").value.trim();
+        
+        try {
+            loading = true;
+            loadingElement.style.display = "block";
+            errorElement.style.display = "none";
+            
+            const response = await api.request(`/api/posts/page?page=${page}&size=${pageSize}&title=${searchTerm}`, {
+                method: 'GET'
+            });
+            
+            const result = await response.json();
+            const posts = result.data.content;
+            totalPages = result.data.totalPages;
+            currentPage = page;
+
+            // 统计数据
+            const stats = {
+                published: 0,
+                draft: 0,
+                pending: 0,
+                total: posts.length
+            };
+            
+            // 清空现有内容
+            tableBody.innerHTML = '';
+            selectedPosts.clear();
+            updateBatchDeleteButton();
+            
+            // 添加文章列表并统计
+            posts.forEach(post => {
+                // 更新统计数据
+                if (post.status === 'published') stats.published++;
+                else if (post.status === 'draft') stats.draft++;
+                else if (post.status === 'pending') stats.pending++;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="text-center">
+                        <input type="checkbox" class="table-checkbox" value="${post.id}" 
+                               onchange="togglePostSelection(${post.id})" />
+                    </td>
+                    <td>
+                        <div class="cell-primary">
+                            <div class="cell-title">${escapeHtml(post.title)}</div>
+                            <div class="cell-subtitle">
+                                <i class="fas fa-user"></i> ${escapeHtml(post.author ? post.author.displayName || post.author.username : 'Unknown')}
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="cell-meta">
+                            ${escapeHtml(post.author ? post.author.displayName || post.author.username : 'Unknown')}
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <span class="status-badge status-${post.status.toLowerCase()}">
+                            ${getStatusText(post.status)}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="cell-meta">
+                            <i class="fas fa-calendar"></i> ${formatDate(post.publishedAt)}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="cell-meta">
+                            <i class="fas fa-clock"></i> ${formatDate(post.updatedAt)}
+                        </div>
+                    </td>
+                    <td class="cell-actions text-center">
+                        <button class="btn btn-icon" onclick='openEditPostModal(${JSON.stringify(post)})' title="编辑文章">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-icon btn-danger" onclick="deletePost(${post.id})" title="删除文章">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // 更新统计卡片
+            document.getElementById('publishedCount').textContent = stats.published;
+            document.getElementById('draftCount').textContent = stats.draft;
+            document.getElementById('pendingCount').textContent = stats.pending;
+            document.getElementById('totalCount').textContent = stats.total;
+            document.getElementById('totalEntries').textContent = stats.total;
+            
+            // 更新分页控件
+            updatePagination();
+            
+        } catch (error) {
+            console.error('加载文章列表失败:', error);
+            errorElement.textContent = '加载文章列表失败，请稍后重试';
+            errorElement.style.display = 'block';
+        } finally {
+            loadingElement.style.display = 'none';
+            loading = false;
+        }
+    }
+
+    // 更新统计数据
+    async function updateStatistics() {
+        try {
+            const response = await api.request('/api/posts/statistics', {
+                method: 'GET'
+            });
+            
+            const result = await response.json();
+            document.getElementById('publishedCount').textContent = result.data.published || 0;
+            document.getElementById('draftCount').textContent = result.data.draft || 0;
+            document.getElementById('pendingCount').textContent = result.data.pending || 0;
+            document.getElementById('totalCount').textContent = result.data.total || 0;
+        } catch (error) {
+            console.error('更新统计数据失败:', error);
+        }
+    }
+
+    // 更新分页控件
+    function updatePagination() {
+        const paginationElement = document.getElementById('pagination');
+        const maxDisplayedPages = 5; // 最多显示的页码数
+        
+        let html = '';
+        
+        // 上一页按钮
+        html += `
+            <button onclick="loadPosts(${currentPage - 1})" 
+                    ${currentPage === 1 ? 'disabled' : ''}>
+                上一页
+            </button>
+        `;
+        
+        // 计算显示的页码范围
+        let startPage = Math.max(1, currentPage - Math.floor(maxDisplayedPages / 2));
+        let endPage = Math.min(totalPages, startPage + maxDisplayedPages - 1);
+        
+        // 调整startPage以确保显示足够的页码
+        if (endPage - startPage + 1 < maxDisplayedPages) {
+            startPage = Math.max(1, endPage - maxDisplayedPages + 1);
+        }
+        
+        // 显示页码
+        for (let i = startPage; i <= endPage; i++) {
+            html += `
+                <button onclick="loadPosts(${i})" 
+                        class="${i === currentPage ? 'active' : ''}">
+                    ${i}
+                </button>
+            `;
+        }
+        
+        // 下一页按钮
+        html += `
+            <button onclick="loadPosts(${currentPage + 1})" 
+                    ${currentPage === totalPages ? 'disabled' : ''}>
+                下一页
+            </button>
+        `;
+        
+        paginationElement.innerHTML = html;
+    }
+
+    // 获取文章状态的显示文本
+    function getStatusText(status) {
+        const statusMap = {
+            'draft': '草稿',
+            'published': '已发布',
+            'pending': '待审核',
+            'trashed': '已删除'
+        };
+        return statusMap[status.toLowerCase()] || status;
+    }
+
+    // 删除单篇文章
+    async function deletePost(id) {
+        if (!confirm('确定要删除这篇文章吗？')) {
+            return;
+        }
+        
+        try {
+            await api.request(`/api/posts/${id}`, {
+                method: 'DELETE'
+            });
+            
+            alert('删除成功');
+            loadPosts(currentPage);
+        } catch (error) {
+            console.error('删除文章失败:', error);
+            alert('删除失败，请稍后重试');
+        }
+    }
+
+    // 切换文章选择状态
+    function togglePostSelection(id) {
+        if (selectedPosts.has(id)) {
+            selectedPosts.delete(id);
+        } else {
+            selectedPosts.add(id);
+        }
+        updateBatchDeleteButton();
+    }
+
+    // 切换全选状态
+    function toggleSelectAll() {
+        const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+        const selectAllCheckbox = document.getElementById('selectAll');
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+            const id = parseInt(checkbox.value);
+            if (selectAllCheckbox.checked) {
+                selectedPosts.add(id);
+            } else {
+                selectedPosts.delete(id);
+            }
+        });
+        
+        updateBatchDeleteButton();
+    }
+
+    // 更新批量删除按钮状态
+    function updateBatchDeleteButton() {
+        const batchDeleteBtn = document.getElementById('batchDeleteBtn');
+        batchDeleteBtn.style.display = selectedPosts.size > 0 ? 'flex' : 'none';
+    }
+
+    // 批量删除文章
+    async function deleteSelectedPosts() {
+        if (!confirm(`确定要删除选中的 ${selectedPosts.size} 篇文章吗？`)) {
+            return;
+        }
+        
+        try {
+            await api.request('/api/posts/batch-delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(Array.from(selectedPosts))
+            });
+            
+            alert('批量删除成功');
+            loadPosts(currentPage);
+        } catch (error) {
+            console.error('批量删除失败:', error);
+            alert('批量删除失败，请稍后重试');
+        }
+    }
+
+    function openEditPostModal(post) {
+        editingPostId = post.id;
+        document.getElementById('editPostTitle').value = post.title;
+        document.getElementById('editPostContent').value = post.content || '';
+        document.getElementById('editPostStatus').value = post.status;
+        document.getElementById('editPostError').textContent = '';
+        document.getElementById('editPostModal').style.display = 'flex';
+    }
+
+    function closeEditPostModal() {
+        document.getElementById('editPostModal').style.display = 'none';
+        editingPostId = null;
+    }
+
+    async function saveEditPost() {
+        const errorDiv = document.getElementById('editPostError');
+        const title = document.getElementById('editPostTitle').value.trim();
+        const content = document.getElementById('editPostContent').value.trim();
+        const status = document.getElementById('editPostStatus').value;
+        if (!title) {
+            errorDiv.textContent = '标题不能为空';
+            return;
+        }
+        try {
+            const res = await fetch(`/api/posts/${editingPostId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, content, status })
+            });
+            const data = await res.json();
+            if (data.code === 0) {
+                closeEditPostModal();
+                loadPosts(currentPage);
+            } else {
+                errorDiv.textContent = data.msg || '保存失败';
+            }
+        } catch (e) {
+            errorDiv.textContent = '保存失败，请稍后重试';
+        }
+    }
+
+    // 初始化
+    (async function init() {
+        loadPosts();
+        updateStatistics();
+    })();
+</script>
+</body>
+</html>

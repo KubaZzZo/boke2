@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我 - 个人博客管理系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 引入字体图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* 关于我页面特定样式 */
+        .about-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .profile-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 50px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .profile-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, #1e88e5, #42a5f5, #90caf9);
+        }
+        
+        .profile-image {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+        }
+        
+        .profile-image img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .profile-image img:hover {
+            transform: scale(1.05);
+        }
+        
+        .profile-info {
+            flex: 2;
+            min-width: 300px;
+        }
+        
+        .profile-name {
+            font-size: 2.2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .profile-title {
+            font-size: 1.2rem;
+            color: #1e88e5;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .profile-bio {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            background: #f5f5f5;
+            border-radius: 50%;
+            color: #333;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background: #1e88e5;
+            color: #fff;
+            transform: translateY(-3px);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(to right, #1e88e5, #42a5f5);
+            border-radius: 1.5px;
+        }
+        
+        .skills-section, .experience-section, .education-section, .contact-section {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skills-section::before, .experience-section::before, .education-section::before, .contact-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, #1e88e5, #42a5f5, #90caf9);
+        }
+        
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .skill-item {
+            background: #f5f5f5;
+            padding: 10px 20px;
+            border-radius: 30px;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .skill-item i {
+            margin-right: 8px;
+            color: #1e88e5;
+        }
+        
+        .skill-item:hover {
+            background: #e3f2fd;
+            transform: translateY(-3px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #1e88e5, #90caf9);
+            border-radius: 1.5px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 30px;
+        }
+        
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -30px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #fff;
+            border: 3px solid #1e88e5;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .timeline-date {
+            font-size: 0.9rem;
+            color: #1e88e5;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-title {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-company, .timeline-school {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-description {
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .contact-item {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-item:hover {
+            background: #e3f2fd;
+            transform: translateY(-3px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            background: #1e88e5;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .contact-text {
+            color: #333;
+        }
+        
+        .contact-text span {
+            display: block;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .contact-form {
+            margin-top: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #1e88e5;
+            box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.2);
+            outline: none;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #1e88e5, #42a5f5);
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #1976d2, #1e88e5);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(30, 136, 229, 0.3);
+        }
+        
+        /* 页面标题样式 */
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .page-title h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .page-title p {
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .page-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, #1e88e5, #42a5f5);
+            margin: 20px auto 0;
+            border-radius: 2px;
+        }
+        
+        /* 动画效果 */
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .profile-section { animation-delay: 0.1s; }
+        .skills-section { animation-delay: 0.2s; }
+        .experience-section { animation-delay: 0.3s; }
+        .education-section { animation-delay: 0.4s; }
+        .contact-section { animation-delay: 0.5s; }
+        
+        /* 技能进度条 */
+        .skill-progress {
+            margin-top: 30px;
+        }
+        
+        .progress-item {
+            margin-bottom: 20px;
+        }
+        
+        .progress-title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .progress-label {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .progress-value {
+            color: #1e88e5;
+            font-weight: 500;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #1e88e5, #42a5f5);
+            border-radius: 4px;
+            width: 0;
+            transition: width 1s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">博客天地</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="categories.html">分类</a></li>
+                <li><a href="archives.html">归档</a></li>
+                <li><a href="about.html" class="active">关于我</a></li>
+                <li><a href="admin/login.html">管理</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="container">
+            <div class="page-title">
+                <h1>关于我</h1>
+                <p>了解更多关于我的信息、技能和经历</p>
+            </div>
+            
+            <div class="about-container">
+                <!-- 个人资料部分 -->
+                <div class="profile-section fade-in">
+                    <div class="profile-image">
+                        <img src="https://via.placeholder.com/200" alt="个人头像">
+                    </div>
+                    <div class="profile-info">
+                        <h2 class="profile-name">张三</h2>
+                        <p class="profile-title">资深全栈开发工程师 | 技术博主</p>
+                        <div class="profile-bio">
+                            <p>我是一名拥有8年工作经验的全栈开发工程师，专注于Java后端和现代前端技术。热爱编程，喜欢分享技术知识，目前在一家互联网公司担任技术负责人。</p>
+                            <p>在工作之余，我喜欢通过博客分享我的技术见解和经验，希望能帮助更多的开发者成长。同时，我也是开源社区的积极贡献者，参与了多个开源项目的开发。</p>
+                        </div>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-github"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-weixin"></i></a>
+                            <a href="#"><i class="fab fa-zhihu"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 技能部分 -->
+                <div class="skills-section fade-in">
+                    <h3 class="section-title">专业技能</h3>
+                    <div class="skills-list">
+                        <div class="skill-item"><i class="fab fa-java"></i> Java</div>
+                        <div class="skill-item"><i class="fas fa-leaf"></i> Spring Boot</div>
+                        <div class="skill-item"><i class="fas fa-cloud"></i> Spring Cloud</div>
+                        <div class="skill-item"><i class="fas fa-database"></i> MySQL</div>
+                        <div class="skill-item"><i class="fas fa-server"></i> Redis</div>
+                        <div class="skill-item"><i class="fab fa-js"></i> JavaScript</div>
+                        <div class="skill-item"><i class="fab fa-vuejs"></i> Vue.js</div>
+                        <div class="skill-item"><i class="fab fa-react"></i> React</div>
+                        <div class="skill-item"><i class="fab fa-docker"></i> Docker</div>
+                        <div class="skill-item"><i class="fab fa-aws"></i> AWS</div>
+                        <div class="skill-item"><i class="fas fa-code-branch"></i> Git</div>
+                        <div class="skill-item"><i class="fas fa-sitemap"></i> 微服务架构</div>
+                    </div>
+                    
+                    <div class="skill-progress">
+                        <div class="progress-item">
+                            <div class="progress-title">
+                                <span class="progress-label">Java & Spring 生态</span>
+                                <span class="progress-value">95%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="95"></div>
+                            </div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-title">
+                                <span class="progress-label">数据库设计与优化</span>
+                                <span class="progress-value">90%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="90"></div>
+                            </div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-title">
+                                <span class="progress-label">前端开发 (Vue/React)</span>
+                                <span class="progress-value">85%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="85"></div>
+                            </div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-title">
+                                <span class="progress-label">DevOps & 云服务</span>
+                                <span class="progress-value">80%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="80"></div>
+                            </div>
+                        </div>
+                        <div class="progress-item">
+                            <div class="progress-title">
+                                <span class="progress-label">系统架构设计</span>
+                                <span class="progress-value">88%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" data-width="88"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 工作经历部分 -->
+                <div class="experience-section fade-in">
+                    <h3 class="section-title">工作经历</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-date">2020年至今</div>
+                            <h4 class="timeline-title">技术负责人</h4>
+                            <div class="timeline-company">ABC科技有限公司</div>
+                            <div class="timeline-description">
+                                <p>负责公司核心产品的技术架构设计和团队管理，带领10人技术团队完成产品迭代和技术升级。主导了微服务架构的改造，提升了系统的可扩展性和稳定性。</p>
+                                <p>主要技术栈：Spring Cloud、MySQL、Redis、Vue.js、Docker、Kubernetes</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-date">2017年 - 2020年</div>
+                            <h4 class="timeline-title">高级Java开发工程师</h4>
+                            <div class="timeline-company">XYZ互联网公司</div>
+                            <div class="timeline-description">
+                                <p>负责公司电商平台的后端开发和维护，参与了支付系统、订单系统和库存系统的设计与实现。优化了数据库查询性能，提升了系统吞吐量。</p>
+                                <p>主要技术栈：Spring Boot、MyBatis、MySQL、Redis、RabbitMQ</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-date">2015年 - 2017年</div>
+                            <h4 class="timeline-title">Java开发工程师</h4>
+                            <div class="timeline-company">DEF软件公司</div>
+                            <div class="timeline-description">
+                                <p>参与企业级CRM系统的开发，负责用户管理、权限控制和报表模块的实现。</p>
+                                <p>主要技术栈：Spring、Hibernate、Oracle、jQuery</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 教育背景部分 -->
+                <div class="education-section fade-in">
+                    <h3 class="section-title">教育背景</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-date">2011年 - 2015年</div>
+                            <h4 class="timeline-title">计算机科学与技术</h4>
+                            <div class="timeline-school">北京大学</div>
+                            <div class="timeline-description">
+                                <p>本科学位，主修计算机科学与技术，辅修数学。在校期间参与多个科研项目，获得优秀毕业生称号。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 联系方式部分 -->
+                <div class="contact-section fade-in">
+                    <h3 class="section-title">联系我</h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-text">
+                                email@example.com
+                                <span>随时欢迎邮件联系</span>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-text">
+                                +86 123 4567 8901
+                                <span>工作日 9:00-18:00</span>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-text">
+                                北京市海淀区
+                                <span>中国</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-form">
+                        <h4>给我留言</h4>
+                        <form>
+                            <div class="form-group">
+                                <label for="name">姓名</label>
+                                <input type="text" id="name" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">邮箱</label>
+                                <input type="email" id="email" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">主题</label>
+                                <input type="text" id="subject" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">留言内容</label>
+                                <textarea id="message" class="form-control" required></textarea>
+                            </div>
+                            <button type="submit" class="btn-submit">发送留言</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">关于博客</h3>
+                    <p>这是一个基于Spring Boot 2和Java 21开发的个人博客管理系统，提供了丰富的博客管理功能。</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-weixin"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="categories.html">分类</a></li>
+                        <li><a href="archives.html">归档</a></li>
+                        <li><a href="about.html">关于我</a></li>
+                        <li><a href="contact.html">联系我</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">联系方式</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> email@example.com</li>
+                        <li><i class="fas fa-phone"></i> +86 123 4567 8901</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 北京市海淀区</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2023 个人博客管理系统. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 页面加载动画
+            const sections = document.querySelectorAll('.profile-section, .skills-section, .experience-section, .education-section, .contact-section');
+            sections.forEach(section => {
+                section.classList.add('fade-in');
+            });
+            
+            // 技能进度条动画
+            setTimeout(() => {
+                const progressFills = document.querySelectorAll('.progress-fill');
+                progressFills.forEach(fill => {
+                    const width = fill.getAttribute('data-width') + '%';
+                    fill.style.width = width;
+                });
+            }, 500);
+        });
+    </script>
+</body>
+</html>

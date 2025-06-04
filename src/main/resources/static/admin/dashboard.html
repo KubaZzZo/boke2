@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 个人博客管理系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <!-- 引入字体图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* 管理后台布局 */
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 侧边栏 */
+        .admin-sidebar {
+            width: 250px;
+            background: linear-gradient(to bottom, #1a2a3a, #263238);
+            color: #fff;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 1000;
+        }
+        
+        .admin-logo {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .admin-logo::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+        
+        .admin-logo h2 {
+            color: #fff;
+            margin: 0;
+            font-size: 22px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .admin-logo h2::before {
+            content: '\f5fd'; /* blog icon */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 10px;
+            font-size: 24px;
+            color: #64b5f6;
+            text-shadow: 0 0 10px rgba(100, 181, 246, 0.5);
+        }
+        
+        .admin-nav {
+            padding: 20px 0;
+        }
+        
+        .admin-nav-item {
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            margin: 4px 8px;
+            border-radius: 6px;
+        }
+        
+        .admin-nav-item:hover, .admin-nav-item.active {
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .admin-nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, #64b5f6, #1976d2);
+            border-radius: 4px 0 0 4px;
+        }
+        
+        .admin-nav-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+        
+        .admin-nav-item:hover i, .admin-nav-item.active i {
+            transform: scale(1.2);
+            color: #64b5f6;
+        }
+        
+        .admin-nav-item span {
+            transition: transform 0.3s ease;
+        }
+        
+        .admin-nav-item:hover span, .admin-nav-item.active span {
+            transform: translateX(4px);
+        }
+        
+        /* 主要内容区域 */
+        .admin-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        /* 顶部栏 */
+        .admin-topbar {
+            background: linear-gradient(to right, #ffffff, #f9f9f9);
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        .admin-topbar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, #1976d2, #64b5f6, #1976d2);
+        }
+        
+        .admin-topbar:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+        
+        .admin-topbar-left h2 {
+            margin: 0;
+            font-size: 22px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .admin-topbar-left h2::before {
+            content: '\f0e4'; /* dashboard icon */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 12px;
+            color: #1976d2;
+            font-size: 20px;
+            background: linear-gradient(135deg, #1976d2, #64b5f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .admin-topbar-right {
+            display: flex;
+            align-items: center;
+        }
+        
+        .admin-user {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            padding: 8px 12px;
+            border-radius: 30px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background: rgba(0, 0, 0, 0.03);
+        }
+        
+        .admin-user:hover {
+            background: rgba(25, 118, 210, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .admin-user-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            object-fit: cover;
+        }
+        
+        .admin-user:hover .admin-user-avatar {
+            transform: scale(1.05);
+            border-color: #64b5f6;
+        }
+        
+        .admin-user-name {
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .admin-user:hover .admin-user-name {
+            color: #1976d2;
+        }
+        
+        .admin-user i {
+            transition: transform 0.3s ease;
+            margin-left: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .admin-user:hover i {
+            transform: rotate(180deg);
+            color: #1976d2;
+        }
+        
+        .admin-user-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            padding: 8px 0;
+            min-width: 180px;
+            display: none;
+            z-index: 1000;
+            transform: translateY(10px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .admin-user-dropdown::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            transform: rotate(45deg);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .admin-user-dropdown a {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .admin-user-dropdown a i {
+            margin-right: 10px;
+            width: 18px;
+            text-align: center;
+            color: #666;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+        
+        .admin-user-dropdown a:hover {
+            background: linear-gradient(to right, rgba(25, 118, 210, 0.08), rgba(25, 118, 210, 0.02));
+            color: #1976d2;
+        }
+        
+        .admin-user-dropdown a:hover i {
+            color: #1976d2;
+            transform: scale(1.2);
+        }
+        
+        .admin-user:hover .admin-user-dropdown {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* 仪表盘卡片 */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+        
+        .dashboard-card {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        
+        .dashboard-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dashboard-card:hover::after {
+            opacity: 1;
+        }
+        
+        .dashboard-card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dashboard-card:hover .dashboard-card-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .dashboard-card-icon.blue {
+            background: linear-gradient(135deg, #42a5f5, #1976d2);
+            color: white;
+        }
+        
+        .dashboard-card-icon.green {
+            background: linear-gradient(135deg, #66bb6a, #388e3c);
+            color: white;
+        }
+        
+        .dashboard-card-icon.orange {
+            background: linear-gradient(135deg, #ffa726, #f57c00);
+            color: white;
+        }
+        
+        .dashboard-card-icon.red {
+            background: linear-gradient(135deg, #ef5350, #d32f2f);
+            color: white;
+        }
+        
+        .dashboard-card-icon::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            background: inherit;
+            opacity: 0.6;
+            filter: blur(10px);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover .dashboard-card-icon::after {
+            opacity: 0.8;
+            filter: blur(15px);
+        }
+        
+        .dashboard-card-content {
+            flex: 1;
+        }
+        
+        .dashboard-card-content h3 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(to right, #333, #666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover .dashboard-card-content h3 {
+            transform: scale(1.05);
+        }
+        
+        .dashboard-card-content p {
+            margin: 8px 0 0;
+            color: #666;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover .dashboard-card-content p {
+            color: #1976d2;
+        }
+        
+        /* 最近活动和快速草稿 */
+        .dashboard-sections {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+        
+        .dashboard-section {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+        
+        .dashboard-section:hover {
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .dashboard-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, #1976d2, #64b5f6);
+        }
+        
+        .dashboard-section h3 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+            font-weight: 600;
+            font-size: 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .dashboard-section:nth-child(1) h3::before {
+            content: '\f017'; /* clock icon */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 10px;
+            color: #1976d2;
+            font-size: 18px;
+        }
+        
+        .dashboard-section:nth-child(2) h3::before {
+            content: '\f044'; /* edit icon */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 10px;
+            color: #1976d2;
+            font-size: 18px;
+        }
+        
+        /* 最近活动列表 */
+        .recent-activities {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+        }
+        
+        .activity-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, #1976d2, #64b5f6);
+            transition: width 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            transform: translateX(5px);
+            background-color: rgba(0, 0, 0, 0.01);
+            padding-left: 10px;
+            border-radius: 8px;
+        }
+        
+        .activity-item:hover::after {
+            width: 100%;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover .activity-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .activity-content {
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-title {
+            margin: 0 0 8px;
+            font-weight: 500;
+            color: #333;
+            transition: color 0.3s ease;
+            font-size: 15px;
+        }
+        
+        .activity-item:hover .activity-title {
+            color: #1976d2;
+        }
+        
+        .activity-time {
+            color: #888;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .activity-time::before {
+            content: '\f017'; /* clock icon */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 5px;
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        /* 快速草稿表单 */
+        .quick-draft form .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .quick-draft form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            transition: color 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .form-group:focus-within label {
+            color: #1976d2;
+        }
+        
+        .quick-draft form input,
+        .quick-draft form textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background-color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+        }
+        
+        .quick-draft form input:focus,
+        .quick-draft form textarea:focus {
+            border-color: #1976d2;
+            box-shadow: 0 4px 10px rgba(25, 118, 210, 0.1);
+            outline: none;
+            background-color: #fff;
+        }
+        
+        .quick-draft form input:hover,
+        .quick-draft form textarea:hover {
+            border-color: #aaa;
+        }
+        
+        .quick-draft form textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        
+        .quick-draft .btn {
+            background: linear-gradient(135deg, #42a5f5, #1976d2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(25, 118, 210, 0.2);
+        }
+        
+        .quick-draft .btn::before {
+            content: '\f0c7'; /* save icon */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 8px;
+            font-size: 14px;
+        }
+        
+        .quick-draft .btn:hover {
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+            box-shadow: 0 6px 15px rgba(25, 118, 210, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .quick-draft .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(25, 118, 210, 0.2);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .dashboard-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 70px;
+                overflow: visible;
+            }
+            
+            .admin-logo h2, .admin-nav-item span {
+                display: none;
+            }
+            
+            .admin-nav-item i {
+                margin-right: 0;
+            }
+            
+            .admin-content {
+                margin-left: 70px;
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 侧边栏 -->
+        <div class="admin-sidebar">
+            <div class="admin-logo">
+                <h2>博客管理系统</h2>
+            </div>
+            
+            <div class="admin-nav">
+                <a href="dashboard.html" class="admin-nav-item active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>仪表盘</span>
+                </a>
+                <a href="posts.html" class="admin-nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>文章管理</span>
+                </a>
+                <a href="categories.html" class="admin-nav-item">
+                    <i class="fas fa-folder"></i>
+                    <span>分类管理</span>
+                </a>
+                <a href="tags.html" class="admin-nav-item">
+                    <i class="fas fa-tags"></i>
+                    <span>标签管理</span>
+                </a>
+                <a href="comments.html" class="admin-nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>评论管理</span>
+                </a>
+                <a href="users.html" class="admin-nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>用户管理</span>
+                </a>
+                <a href="settings.html" class="admin-nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>系统设置</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 主要内容区域 -->
+        <div class="admin-content">
+            <!-- 顶部栏 -->
+            <div class="admin-topbar">
+                <div class="admin-topbar-left">
+                    <h2>仪表盘</h2>
+                </div>
+                
+                <div class="admin-topbar-right">
+                    <div class="admin-user">
+                        <img src="https://via.placeholder.com/36" alt="管理员头像" class="admin-user-avatar">
+                        <span class="admin-user-name">管理员</span>
+                        <i class="fas fa-chevron-down" style="margin-left: 5px;"></i>
+                        
+                        <div class="admin-user-dropdown">
+                            <a href="profile.html"><i class="fas fa-user"></i> 个人资料</a>
+                            <a href="settings.html"><i class="fas fa-cog"></i> 系统设置</a>
+                            <a href="../index.html"><i class="fas fa-external-link-alt"></i> 查看网站</a>
+                            <a href="login.html"><i class="fas fa-sign-out-alt"></i> 退出登录</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 仪表盘卡片 -->
+            <div class="dashboard-cards">
+                <div class="dashboard-card">
+                    <div class="dashboard-card-icon blue">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="dashboard-card-content">
+                        <h3>25</h3>
+                        <p>文章总数</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="dashboard-card-icon green">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="dashboard-card-content">
+                        <h3>12,345</h3>
+                        <p>总浏览量</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="dashboard-card-icon orange">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="dashboard-card-content">
+                        <h3>142</h3>
+                        <p>评论总数</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="dashboard-card-icon red">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="dashboard-card-content">
+                        <h3>48</h3>
+                        <p>注册用户</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 最近活动和快速草稿 -->
+            <div class="dashboard-sections">
+                <!-- 最近活动 -->
+                <div class="dashboard-section">
+                    <h3>最近活动</h3>
+                    
+                    <ul class="recent-activities">
+                        <li class="activity-item">
+                            <div class="activity-icon" style="background-color: rgba(30, 136, 229, 0.1); color: #1e88e5;">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4 class="activity-title">发布了新文章《Java 21新特性详解：你需要知道的一切》</h4>
+                                <p class="activity-time">2023-05-28 14:30</p>
+                            </div>
+                        </li>
+                        
+                        <li class="activity-item">
+                            <div class="activity-icon" style="background-color: rgba(46, 125, 50, 0.1); color: #2e7d32;">
+                                <i class="fas fa-comment"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4 class="activity-title">回复了张三的评论</h4>
+                                <p class="activity-time">2023-05-27 09:15</p>
+                            </div>
+                        </li>
+                        
+                        <li class="activity-item">
+                            <div class="activity-icon" style="background-color: rgba(245, 124, 0, 0.1); color: #f57c00;">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4 class="activity-title">更新了文章《Spring Boot 2最佳实践：从入门到精通》</h4>
+                                <p class="activity-time">2023-05-26 16:45</p>
+                            </div>
+                        </li>
+                        
+                        <li class="activity-item">
+                            <div class="activity-icon" style="background-color: rgba(198, 40, 40, 0.1); color: #c62828;">
+                                <i class="fas fa-trash-alt"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4 class="activity-title">删除了一篇草稿</h4>
+                                <p class="activity-time">2023-05-25 11:20</p>
+                            </div>
+                        </li>
+                        
+                        <li class="activity-item">
+                            <div class="activity-icon" style="background-color: rgba(123, 31, 162, 0.1); color: #7b1fa2;">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4 class="activity-title">更新了系统设置</h4>
+                                <p class="activity-time">2023-05-24 10:05</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- 快速草稿 -->
+                <div class="dashboard-section quick-draft">
+                    <h3>快速草稿</h3>
+                    
+                    <form>
+                        <div class="form-group">
+                            <label for="draft-title">标题</label>
+                            <input type="text" id="draft-title" placeholder="输入文章标题">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="draft-content">内容</label>
+                            <textarea id="draft-content" placeholder="输入文章内容"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn">保存草稿</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 页面加载动画
+            const adminContent = document.querySelector('.admin-content');
+            const dashboardCards = document.querySelectorAll('.dashboard-card');
+            const dashboardSections = document.querySelectorAll('.dashboard-section');
+            const activityItems = document.querySelectorAll('.activity-item');
+            
+            // 初始化样式
+            adminContent.style.opacity = '0';
+            adminContent.style.transform = 'translateY(20px)';
+            
+            dashboardCards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+            });
+            
+            dashboardSections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+            });
+            
+            // 内容区域动画
+            setTimeout(() => {
+                adminContent.style.transition = 'all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                adminContent.style.opacity = '1';
+                adminContent.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // 卡片动画
+            dashboardCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 300 + index * 100);
+            });
+            
+            // 区域动画
+            dashboardSections.forEach((section, index) => {
+                setTimeout(() => {
+                    section.style.transition = 'all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                }, 700 + index * 150);
+            });
+            
+            // 活动项动画
+            activityItems.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(-20px)';
+                
+                setTimeout(() => {
+                    item.style.transition = 'all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateX(0)';
+                }, 1000 + index * 100);
+            });
+            
+            // 侧边栏导航项点击事件
+            const navItems = document.querySelectorAll('.admin-nav-item');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有导航项的活动状态
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    
+                    // 添加当前点击项的活动状态
+                    this.classList.add('active');
+                });
+            });
+            
+            // 快速草稿表单提交事件
+            const draftForm = document.querySelector('.quick-draft form');
+            
+            if (draftForm) {
+                draftForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const title = document.getElementById('draft-title').value;
+                    const content = document.getElementById('draft-content').value;
+                    
+                    if (title && content) {
+                        // 按钮加载效果
+                        const submitBtn = this.querySelector('.btn');
+                        const originalText = submitBtn.innerHTML;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 保存中...';
+                        submitBtn.disabled = true;
+                        
+                        // 模拟API调用延迟
+                        setTimeout(() => {
+                            // 创建成功通知
+                            const notification = document.createElement('div');
+                            notification.className = 'notification success';
+                            notification.innerHTML = '<i class="fas fa-check-circle"></i> 草稿已成功保存！';
+                            document.body.appendChild(notification);
+                            
+                            // 显示通知
+                            setTimeout(() => {
+                                notification.style.right = '20px';
+                            }, 100);
+                            
+                            // 隐藏通知
+                            setTimeout(() => {
+                                notification.style.right = '-300px';
+                                setTimeout(() => {
+                                    document.body.removeChild(notification);
+                                }, 500);
+                            }, 3000);
+                            
+                            // 恢复按钮状态
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                            
+                            // 清空表单
+                            this.reset();
+                        }, 1500);
+                    } else {
+                        // 创建错误通知
+                        const notification = document.createElement('div');
+                        notification.className = 'notification error';
+                        notification.innerHTML = '<i class="fas fa-exclamation-circle"></i> 请填写标题和内容！';
+                        document.body.appendChild(notification);
+                        
+                        // 显示通知
+                        setTimeout(() => {
+                            notification.style.right = '20px';
+                        }, 100);
+                        
+                        // 隐藏通知
+                        setTimeout(() => {
+                            notification.style.right = '-300px';
+                            setTimeout(() => {
+                                document.body.removeChild(notification);
+                            }, 500);
+                        }, 3000);
+                    }
+                });
+            }
+            
+            // 添加通知样式
+            const style = document.createElement('style');
+            style.textContent = `
+                .notification {
+                    position: fixed;
+                    top: 20px;
+                    right: -300px;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    display: flex;
+                    align-items: center;
+                    min-width: 250px;
+                    z-index: 9999;
+                    transition: right 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+                }
+                
+                .notification.success {
+                    background: linear-gradient(135deg, #66bb6a, #388e3c);
+                    color: white;
+                }
+                
+                .notification.error {
+                    background: linear-gradient(135deg, #ef5350, #d32f2f);
+                    color: white;
+                }
+                
+                .notification i {
+                    margin-right: 10px;
+                    font-size: 18px;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+
+        // token校验与自动跳转
+        (function() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            // 覆盖fetch，自动带token
+            const _fetch = window.fetch;
+            window.fetch = function(url, options = {}) {
+                options.headers = options.headers || {};
+                if (token) {
+                    options.headers['Authorization'] = 'Bearer ' + token;
+                }
+                return _fetch(url, options);
+            };
+        })();
+    </script>
+</body>
+</html>

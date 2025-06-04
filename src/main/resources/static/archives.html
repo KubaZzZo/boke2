@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章归档 - 个人博客管理系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 引入字体图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* 归档页面特定样式 */
+        .archives-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50px;
+            width: 4px;
+            background: linear-gradient(to bottom, #1e88e5, #42a5f5, #90caf9);
+            border-radius: 2px;
+        }
+        
+        .year-container {
+            margin-bottom: 40px;
+        }
+        
+        .year-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .year-badge {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #1e88e5, #42a5f5);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .year-badge::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            border: 4px solid #1e88e5;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .year-title {
+            margin-left: 30px;
+            font-size: 2.2rem;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .month-container {
+            margin-left: 100px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .month-container::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: -50px;
+            width: 30px;
+            height: 4px;
+            background: #90caf9;
+            border-radius: 2px;
+        }
+        
+        .month-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .month-badge {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #42a5f5, #90caf9);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .month-title {
+            margin-left: 20px;
+            font-size: 1.5rem;
+            color: #444;
+        }
+        
+        .post-list {
+            margin-left: 80px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .post-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+        
+        .post-item:last-child {
+            border-bottom: none;
+        }
+        
+        .post-item:hover {
+            background-color: #f5f9ff;
+        }
+        
+        .post-link {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .post-link:hover .post-title {
+            color: #1e88e5;
+        }
+        
+        .post-title {
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+        
+        .post-meta {
+            display: flex;
+            align-items: center;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .post-meta i {
+            margin-right: 5px;
+        }
+        
+        .post-meta span {
+            margin-right: 15px;
+        }
+        
+        .post-meta span:last-child {
+            margin-right: 0;
+        }
+        
+        .post-date {
+            min-width: 100px;
+        }
+        
+        /* 页面标题样式 */
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .page-title h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .page-title p {
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .page-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, #1e88e5, #42a5f5);
+            margin: 20px auto 0;
+            border-radius: 2px;
+        }
+        
+        /* 动画效果 */
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .year-container:nth-child(1) { animation-delay: 0.1s; }
+        .year-container:nth-child(2) { animation-delay: 0.2s; }
+        .year-container:nth-child(3) { animation-delay: 0.3s; }
+        
+        .month-container { opacity: 0; }
+        .month-container.visible { 
+            animation: slideIn 0.5s ease forwards; 
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* 统计信息 */
+        .archive-stats {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            gap: 30px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            background: #fff;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            min-width: 120px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1e88e5;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">博客天地</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="categories.html">分类</a></li>
+                <li><a href="archives.html" class="active">归档</a></li>
+                <li><a href="about.html">关于我</a></li>
+                <li><a href="admin/login.html">管理</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="container">
+            <div class="page-title">
+                <h1>文章归档</h1>
+                <p>按时间顺序浏览所有博客文章</p>
+            </div>
+            
+            <!-- 统计信息 -->
+            <div class="archive-stats fade-in">
+                <div class="stat-item">
+                    <div class="stat-number">53</div>
+                    <div class="stat-label">文章总数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">分类数量</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">年度归档</div>
+                </div>
+            </div>
+            
+            <div class="archives-container">
+                <div class="timeline">
+                    <!-- 2023年 -->
+                    <div class="year-container fade-in">
+                        <div class="year-header">
+                            <div class="year-badge">2023</div>
+                            <h2 class="year-title">2023年</h2>
+                        </div>
+                        
+                        <!-- 5月 -->
+                        <div class="month-container">
+                            <div class="month-header">
+                                <div class="month-badge">5月</div>
+                                <h3 class="month-title">2023年5月</h3>
+                            </div>
+                            <div class="post-list">
+                                <div class="post-item">
+                                    <a href="blog-detail.html" class="post-link">
+                                        <div class="post-title">Java 21新特性详解：你需要知道的一切</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-05-28</span>
+                                            <span><i class="far fa-folder"></i> Java</span>
+                                            <span><i class="far fa-eye"></i> 1024</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">微服务架构实战：从设计到部署</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-05-20</span>
+                                            <span><i class="far fa-folder"></i> 架构设计</span>
+                                            <span><i class="far fa-eye"></i> 856</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">Docker容器化应用实战</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-05-15</span>
+                                            <span><i class="far fa-folder"></i> DevOps</span>
+                                            <span><i class="far fa-eye"></i> 723</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">Vue 3深入浅出：Composition API详解</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-05-10</span>
+                                            <span><i class="far fa-folder"></i> 前端开发</span>
+                                            <span><i class="far fa-eye"></i> 689</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">常见排序算法详解与实现</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-05-05</span>
+                                            <span><i class="far fa-folder"></i> 算法与数据结构</span>
+                                            <span><i class="far fa-eye"></i> 542</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 4月 -->
+                        <div class="month-container">
+                            <div class="month-header">
+                                <div class="month-badge">4月</div>
+                                <h3 class="month-title">2023年4月</h3>
+                            </div>
+                            <div class="post-list">
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">Spring Boot 2最佳实践：从入门到精通</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-04-28</span>
+                                            <span><i class="far fa-folder"></i> Java</span>
+                                            <span><i class="far fa-eye"></i> 978</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">MySQL性能优化实战指南</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-04-20</span>
+                                            <span><i class="far fa-folder"></i> 数据库</span>
+                                            <span><i class="far fa-eye"></i> 845</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">图算法：从基础到高级应用</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-04-15</span>
+                                            <span><i class="far fa-folder"></i> 算法与数据结构</span>
+                                            <span><i class="far fa-eye"></i> 632</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">Kubernetes入门到精通</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-04-10</span>
+                                            <span><i class="far fa-folder"></i> DevOps</span>
+                                            <span><i class="far fa-eye"></i> 721</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">领域驱动设计(DDD)实践指南</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-04-05</span>
+                                            <span><i class="far fa-folder"></i> 架构设计</span>
+                                            <span><i class="far fa-eye"></i> 589</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 3月 -->
+                        <div class="month-container">
+                            <div class="month-header">
+                                <div class="month-badge">3月</div>
+                                <h3 class="month-title">2023年3月</h3>
+                            </div>
+                            <div class="post-list">
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">React Hooks完全指南</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-03-22</span>
+                                            <span><i class="far fa-folder"></i> 前端开发</span>
+                                            <span><i class="far fa-eye"></i> 756</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">Redis高级特性与应用场景</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-03-15</span>
+                                            <span><i class="far fa-folder"></i> 数据库</span>
+                                            <span><i class="far fa-eye"></i> 678</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">动态规划问题解析</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-03-10</span>
+                                            <span><i class="far fa-folder"></i> 算法与数据结构</span>
+                                            <span><i class="far fa-eye"></i> 543</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">Jenkins自动化部署流水线搭建</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-03-05</span>
+                                            <span><i class="far fa-folder"></i> DevOps</span>
+                                            <span><i class="far fa-eye"></i> 621</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">设计模式在实际项目中的应用</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2023-03-01</span>
+                                            <span><i class="far fa-folder"></i> 架构设计</span>
+                                            <span><i class="far fa-eye"></i> 587</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 2022年 -->
+                    <div class="year-container fade-in">
+                        <div class="year-header">
+                            <div class="year-badge">2022</div>
+                            <h2 class="year-title">2022年</h2>
+                        </div>
+                        
+                        <!-- 12月 -->
+                        <div class="month-container">
+                            <div class="month-header">
+                                <div class="month-badge">12月</div>
+                                <h3 class="month-title">2022年12月</h3>
+                            </div>
+                            <div class="post-list">
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">2022年Java生态系统回顾</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2022-12-28</span>
+                                            <span><i class="far fa-folder"></i> Java</span>
+                                            <span><i class="far fa-eye"></i> 892</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">前端框架对比：React vs Vue vs Angular</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2022-12-15</span>
+                                            <span><i class="far fa-folder"></i> 前端开发</span>
+                                            <span><i class="far fa-eye"></i> 1024</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 更多月份可以按照相同结构添加 -->
+                    </div>
+                    
+                    <!-- 2021年 -->
+                    <div class="year-container fade-in">
+                        <div class="year-header">
+                            <div class="year-badge">2021</div>
+                            <h2 class="year-title">2021年</h2>
+                        </div>
+                        
+                        <!-- 12月 -->
+                        <div class="month-container">
+                            <div class="month-header">
+                                <div class="month-badge">12月</div>
+                                <h3 class="month-title">2021年12月</h3>
+                            </div>
+                            <div class="post-list">
+                                <div class="post-item">
+                                    <a href="#" class="post-link">
+                                        <div class="post-title">2021年技术趋势回顾与2022年展望</div>
+                                        <div class="post-meta">
+                                            <span class="post-date"><i class="far fa-calendar-alt"></i> 2021-12-30</span>
+                                            <span><i class="far fa-folder"></i> 技术趋势</span>
+                                            <span><i class="far fa-eye"></i> 1256</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 更多月份可以按照相同结构添加 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">关于博客</h3>
+                    <p>这是一个基于Spring Boot 2和Java 21开发的个人博客管理系统，提供了丰富的博客管理功能。</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-weixin"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="categories.html">分类</a></li>
+                        <li><a href="archives.html">归档</a></li>
+                        <li><a href="about.html">关于我</a></li>
+                        <li><a href="contact.html">联系我</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">联系方式</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> email@example.com</li>
+                        <li><i class="fas fa-phone"></i> +86 123 4567 8901</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 北京市海淀区</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2023 个人博客管理系统. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 页面加载动画
+            const yearContainers = document.querySelectorAll('.year-container');
+            yearContainers.forEach(container => {
+                container.classList.add('fade-in');
+            });
+            
+            // 滚动时显示月份容器的动画
+            const monthContainers = document.querySelectorAll('.month-container');
+            
+            function checkVisibility() {
+                monthContainers.forEach(container => {
+                    const rect = container.getBoundingClientRect();
+                    const isVisible = (rect.top <= window.innerHeight * 0.8 && rect.bottom >= 0);
+                    
+                    if (isVisible) {
+                        container.classList.add('visible');
+                    }
+                });
+            }
+            
+            // 初始检查
+            checkVisibility();
+            
+            // 滚动时检查
+            window.addEventListener('scroll', checkVisibility);
+        });
+    </script>
+</body>
+</html>

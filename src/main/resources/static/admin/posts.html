@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>文章管理 - 博客管理系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="admin-container">
+    <!-- 侧边栏 -->
+    <div class="admin-sidebar">
+        <div class="admin-logo">
+            <h2>博客管理系统</h2>
+        </div>
+        <div class="admin-nav">
+            <a href="dashboard.html" class="admin-nav-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>仪表盘</span>
+            </a>
+            <a href="posts.html" class="admin-nav-item active">
+                <i class="fas fa-file-alt"></i>
+                <span>文章管理</span>
+            </a>
+            <a href="categories.html" class="admin-nav-item">
+                <i class="fas fa-folder"></i>
+                <span>分类管理</span>
+            </a>
+            <a href="tags.html" class="admin-nav-item">
+                <i class="fas fa-tags"></i>
+                <span>标签管理</span>
+            </a>
+            <a href="comments.html" class="admin-nav-item">
+                <i class="fas fa-comments"></i>
+                <span>评论管理</span>
+            </a>
+            <a href="users.html" class="admin-nav-item">
+                <i class="fas fa-users"></i>
+                <span>用户管理</span>
+            </a>
+            <a href="settings.html" class="admin-nav-item">
+                <i class="fas fa-cog"></i>
+                <span>系统设置</span>
+            </a>
+        </div>
+    </div>
+    <!-- 主内容区 -->
+    <div class="admin-content">
+        <!-- 顶部栏 -->
+        <div class="admin-topbar">
+            <div class="admin-topbar-left">
+                <h2><i class="fas fa-file-alt"></i> 文章管理</h2>
+            </div>
+            <div class="admin-topbar-right">
+                <div class="admin-user">
+                    <img src="https://via.placeholder.com/36" alt="管理员头像" class="admin-user-avatar">
+                    <span class="admin-user-name">管理员</span>
+                    <i class="fas fa-chevron-down" style="margin-left: 5px;"></i>
+                    <div class="admin-user-dropdown">
+                        <a href="profile.html"><i class="fas fa-user"></i> 个人资料</a>
+                        <a href="settings.html"><i class="fas fa-cog"></i> 系统设置</a>
+                        <a href="../index.html"><i class="fas fa-external-link-alt"></i> 查看网站</a>
+                        <a href="login.html"><i class="fas fa-sign-out-alt"></i> 退出登录</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 业务内容区 -->
+        <div class="posts-header">
+            <div class="posts-actions">
+                <a href="post-edit.html" class="btn"><i class="fas fa-plus"></i> 新建文章</a>
+                <button class="btn btn-outline" id="bulk-delete"><i class="fas fa-trash-alt"></i> 批量删除</button>
+            </div>
+            <div class="posts-filter">
+                <select id="status-filter">
+                    <option value="all">所有状态</option>
+                    <option value="published">已发布</option>
+                    <option value="draft">草稿</option>
+                    <option value="pending">待审核</option>
+                </select>
+                <select id="category-filter">
+                    <option value="all">所有分类</option>
+                    <option value="1">Java</option>
+                    <option value="2">Spring Boot</option>
+                    <option value="3">前端开发</option>
+                    <option value="4">数据库</option>
+                </select>
+                <input type="text" placeholder="搜索文章..." id="search-posts">
+                <button class="btn" id="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+        <div class="posts-table-container">
+            <table class="posts-table">
+                <thead>
+                    <tr>
+                        <th width="40">
+                            <input type="checkbox" id="select-all">
+                        </th>
+                        <th>标题</th>
+                        <th>分类</th>
+                        <th>标签</th>
+                        <th>状态</th>
+                        <th>发布日期</th>
+                        <th>浏览量</th>
+                        <th width="120">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 文章数据将通过JavaScript动态加载 -->
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination">
+            <!-- 分页按钮将通过JavaScript动态加载 -->
+        </div>
+        <!-- 删除确认模态框 -->
+        <div class="modal" id="delete-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>确认删除</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>您确定要删除选中的文章吗？此操作无法撤销。</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancel-delete">取消</button>
+                    <button class="btn btn-danger" id="confirm-delete">删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 侧边栏导航项点击事件
+        const navItems = document.querySelectorAll('.admin-nav-item');
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // 移除所有导航项的活动状态
+                navItems.forEach(nav => nav.classList.remove('active'));
+                
+                // 添加当前点击项的活动状态
+                this.classList.add('active');
+            });
+        });
+        
+        // 全选/取消全选
+        const selectAll = document.getElementById('select-all');
+        const postCheckboxes = document.querySelectorAll('.post-checkbox');
+        
+        if (selectAll) {
+            selectAll.addEventListener('change', function() {
+                postCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+        }
+        
+        // 单个复选框改变时检查全选状态
+        postCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const allChecked = Array.from(postCheckboxes).every(cb => cb.checked);
+                selectAll.checked = allChecked;
+            });
+        });
+        
+        // 删除按钮点击事件
+        const deleteButtons = document.querySelectorAll('.delete');
+        const deleteModal = document.getElementById('delete-modal');
+        const cancelDelete = document.getElementById('cancel-delete');
+        const confirmDelete = document.getElementById('confirm-delete');
+        const modalClose = document.querySelector('.modal-close');
+        let deleteId = null;
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                deleteId = this.getAttribute('data-id');
+                deleteModal.classList.add('active');
+            });
+        });
+        
+        // 批量删除按钮点击事件
+        const bulkDelete = document.getElementById('bulk-delete');
+        
+        if (bulkDelete) {
+            bulkDelete.addEventListener('click', function() {
+                const selectedPosts = Array.from(postCheckboxes).filter(cb => cb.checked);
+                
+                if (selectedPosts.length > 0) {
+                    deleteId = 'bulk';
+                    deleteModal.classList.add('active');
+                } else {
+                    alert('请选择要删除的文章！');
+                }
+            });
+        }
+        
+        // 关闭模态框
+        if (cancelDelete) {
+            cancelDelete.addEventListener('click', function() {
+                deleteModal.classList.remove('active');
+                deleteId = null;
+            });
+        }
+        
+        if (modalClose) {
+            modalClose.addEventListener('click', function() {
+                deleteModal.classList.remove('active');
+                deleteId = null;
+            });
+        }
+        
+        // 确认删除
+        if (confirmDelete) {
+            confirmDelete.addEventListener('click', function() {
+                if (deleteId === 'bulk') {
+                    // 批量删除逻辑
+                    const selectedIds = Array.from(postCheckboxes)
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+                    
+                    // 这里应该是实际的删除API调用
+                    console.log('批量删除文章ID:', selectedIds);
+                    
+                    // 模拟删除成功后移除表格行
+                    selectedIds.forEach(id => {
+                        const row = document.querySelector(`.post-checkbox[value="${id}"]`).closest('tr');
+                        row.remove();
+                    });
+                } else {
+                    // 单个删除逻辑
+                    console.log('删除文章ID:', deleteId);
+                    
+                    // 模拟删除成功后移除表格行
+                    const row = document.querySelector(`.delete[data-id="${deleteId}"]`).closest('tr');
+                    row.remove();
+                }
+                
+                // 关闭模态框
+                deleteModal.classList.remove('active');
+                deleteId = null;
+                
+                // 更新全选状态
+                const remainingCheckboxes = document.querySelectorAll('.post-checkbox');
+                if (remainingCheckboxes.length > 0) {
+                    const allChecked = Array.from(remainingCheckboxes).every(cb => cb.checked);
+                    selectAll.checked = allChecked;
+                } else {
+                    selectAll.checked = false;
+                }
+            });
+        }
+        
+        // 筛选和搜索功能
+        const statusFilter = document.getElementById('status-filter');
+        const categoryFilter = document.getElementById('category-filter');
+        const searchInput = document.getElementById('search-posts');
+        const searchBtn = document.getElementById('search-btn');
+        
+        function applyFilters() {
+            const status = statusFilter.value;
+            const category = categoryFilter.value;
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            const rows = document.querySelectorAll('.posts-table tbody tr');
+            
+            rows.forEach(row => {
+                const title = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                const rowCategory = row.querySelector('td:nth-child(3)').textContent;
+                const rowStatus = row.querySelector('.post-status').textContent;
+                
+                let statusMatch = status === 'all' || rowStatus.includes(status === 'published' ? '已发布' : status === 'draft' ? '草稿' : '待审核');
+                let categoryMatch = category === 'all' || rowCategory === (category === '1' ? 'Java' : category === '2' ? 'Spring Boot' : category === '3' ? '前端开发' : '数据库');
+                let searchMatch = searchTerm === '' || title.includes(searchTerm);
+                
+                if (statusMatch && categoryMatch && searchMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+        if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
+        if (searchBtn) searchBtn.addEventListener('click', applyFilters);
+        if (searchInput) searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
+        });
+        
+        // 动态加载文章数据
+        function loadPosts(page = 1) {
+            fetch(`/api/posts/page?page=${page}&size=10`)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.code === 0 && res.data && res.data.content) {
+                        const tbody = document.querySelector('.posts-table tbody');
+                        tbody.innerHTML = '';
+                        res.data.content.forEach(post => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td><input type="checkbox" class="post-checkbox" value="${post.id}"></td>
+                                <td>${post.title}</td>
+                                <td>${post.categoryName || ''}</td>
+                                <td>${post.tags ? post.tags.join(', ') : ''}</td>
+                                <td><span class="post-status ${post.status}">${post.status === 'published' ? '已发布' : post.status === 'draft' ? '草稿' : post.status === 'pending' ? '待审核' : '回收站'}</span></td>
+                                <td>${post.publishedAt ? post.publishedAt.substring(0, 10) : '-'}</td>
+                                <td>${post.viewsCount || 0}</td>
+                                <td class="post-actions">
+                                    <a href="post-edit.html?id=${post.id}" title="编辑"><i class="fas fa-edit"></i></a>
+                                    <a href="../blog-detail.html?id=${post.id}" target="_blank" title="查看"><i class="fas fa-eye"></i></a>
+                                    <a href="#" class="delete" data-id="${post.id}" title="删除"><i class="fas fa-trash-alt"></i></a>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                });
+        }
+        loadPosts();
+    });
+</script>
+</body>
+</html>

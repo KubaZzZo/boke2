@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客详情 - 个人博客管理系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 引入字体图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">博客天地</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="categories.html">分类</a></li>
+                <li><a href="archives.html">归档</a></li>
+                <li><a href="about.html">关于我</a></li>
+                <li><a href="admin/login.html">管理</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <div class="container">
+            <div style="display: flex; gap: 30px;">
+                <!-- 左侧博客详情 -->
+                <div style="flex: 2;">
+                    <div class="blog-detail">
+                        <div class="blog-detail-header">
+                            <h1 class="blog-detail-title">Java 21新特性详解：你需要知道的一切</h1>
+                            <div class="blog-detail-meta">
+                                <span><i class="far fa-calendar-alt"></i> 2023-05-28</span>
+                                <span><i class="far fa-folder"></i> Java</span>
+                                <span><i class="far fa-user"></i> 李四</span>
+                                <span><i class="far fa-eye"></i> 1024次阅读</span>
+                            </div>
+                        </div>
+                        
+                        <div class="blog-detail-content">
+                            <p>Java 21已经发布，带来了许多令人兴奋的新特性。本文将详细介绍这些新特性，并探讨它们如何改变我们的编程方式。</p>
+                            
+                            <h2>1. 虚拟线程（Virtual Threads）</h2>
+                            <p>虚拟线程是Java 21中最重要的新特性之一。它们是轻量级线程，由JVM而不是操作系统管理，可以大大提高应用程序的吞吐量。</p>
+                            
+                            <pre><code>// 使用虚拟线程
+Thread.startVirtualThread(() -> {
+    System.out.println("Hello from virtual thread!");
+});</code></pre>
+                            
+                            <h2>2. 记录模式（Record Patterns）</h2>
+                            <p>记录模式扩展了模式匹配功能，使得处理复杂数据结构变得更加简单。</p>
+                            
+                            <pre><code>// 使用记录模式
+if (obj instanceof Point(int x, int y)) {
+    System.out.println("x = " + x + ", y = " + y);
+}</code></pre>
+                            
+                            <h2>3. 字符串模板（String Templates）</h2>
+                            <p>字符串模板提供了一种更简洁、更直观的方式来创建包含变量的字符串。</p>
+                            
+                            <pre><code>// 使用字符串模板
+String name = "John";
+int age = 30;
+String message = STR."My name is \{name} and I am \{age} years old.";</code></pre>
+                            
+                            <h2>4. 开关模式匹配（Switch Pattern Matching）</h2>
+                            <p>开关模式匹配使得switch语句更加强大，可以根据对象的类型和属性进行匹配。</p>
+                            
+                            <pre><code>// 使用开关模式匹配
+Object obj = // ...
+String result = switch (obj) {
+    case Integer i -> "Integer: " + i;
+    case String s -> "String: " + s;
+    case Point(int x, int y) -> "Point: x=" + x + ", y=" + y;
+    default -> "Unknown";
+};</code></pre>
+                            
+                            <h2>5. 外部函数和内存API（Foreign Function & Memory API）</h2>
+                            <p>这个API允许Java代码与本地代码（如C/C++）进行交互，并直接访问内存，而不需要使用JNI。</p>
+                            
+                            <pre><code>// 使用外部函数和内存API
+var symbolLookup = SymbolLookup.loaderLookup();
+var malloc = linker.downcallHandle(
+    symbolLookup.lookup("malloc").orElseThrow(),
+    MethodType.methodType(MemoryAddress.class, long.class),
+    FunctionDescriptor.of(JAVA_LONG, JAVA_LONG)
+);</code></pre>
+                            
+                            <h2>结论</h2>
+                            <p>Java 21带来了许多令人兴奋的新特性，这些特性将使Java开发更加高效和现代化。虚拟线程、记录模式、字符串模板、开关模式匹配以及外部函数和内存API都是值得关注的重要更新。</p>
+                            
+                            <p>随着这些新特性的引入，Java继续保持其作为企业级应用开发首选语言的地位，同时也在不断适应现代编程的需求。</p>
+                        </div>
+                        
+                        <!-- 标签 -->
+                        <div class="blog-tags">
+                            <span>标签：</span>
+                            <a href="#">Java</a>
+                            <a href="#">编程语言</a>
+                            <a href="#">新特性</a>
+                        </div>
+                        
+                        <!-- 分享 -->
+                        <div class="blog-share">
+                            <span>分享到：</span>
+                            <a href="#"><i class="fab fa-weixin"></i></a>
+                            <a href="#"><i class="fab fa-weibo"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-facebook"></i></a>
+                        </div>
+                        
+                        <!-- 上一篇/下一篇 -->
+                        <div class="blog-navigation">
+                            <a href="#" class="prev-post"><i class="fas fa-arrow-left"></i> 上一篇：Spring Boot 2最佳实践：从入门到精通</a>
+                            <a href="#" class="next-post">下一篇：如何提高编程效率：10个实用技巧 <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                        
+                        <!-- 评论区 -->
+                        <div class="blog-comments">
+                            <h3>评论（3）</h3>
+                            
+                            <!-- 评论列表 -->
+                            <div class="comment-list">
+                                <div class="comment">
+                                    <div class="comment-avatar">
+                                        <img src="https://via.placeholder.com/50" alt="用户头像">
+                                    </div>
+                                    <div class="comment-content">
+                                        <div class="comment-info">
+                                            <span class="comment-author">张三</span>
+                                            <span class="comment-date">2023-06-01</span>
+                                        </div>
+                                        <div class="comment-text">
+                                            <p>非常详细的介绍，对我理解Java 21的新特性很有帮助！</p>
+                                        </div>
+                                        <div class="comment-actions">
+                                            <a href="#">回复</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="comment">
+                                    <div class="comment-avatar">
+                                        <img src="https://via.placeholder.com/50" alt="用户头像">
+                                    </div>
+                                    <div class="comment-content">
+                                        <div class="comment-info">
+                                            <span class="comment-author">李四</span>
+                                            <span class="comment-date">2023-06-02</span>
+                                        </div>
+                                        <div class="comment-text">
+                                            <p>虚拟线程确实是一个游戏规则改变者，我已经在我的项目中尝试使用了，性能提升很明显。</p>
+                                        </div>
+                                        <div class="comment-actions">
+                                            <a href="#">回复</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="comment">
+                                    <div class="comment-avatar">
+                                        <img src="https://via.placeholder.com/50" alt="用户头像">
+                                    </div>
+                                    <div class="comment-content">
+                                        <div class="comment-info">
+                                            <span class="comment-author">王五</span>
+                                            <span class="comment-date">2023-06-03</span>
+                                        </div>
+                                        <div class="comment-text">
+                                            <p>字符串模板看起来很方便，不过我担心它会使代码可读性下降。你有没有在实际项目中使用过？</p>
+                                        </div>
+                                        <div class="comment-actions">
+                                            <a href="#">回复</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 评论表单 -->
+                            <div class="comment-form">
+                                <h3>发表评论</h3>
+                                <form>
+                                    <div class="form-group">
+                                        <label for="comment-name">姓名</label>
+                                        <input type="text" id="comment-name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="comment-email">邮箱</label>
+                                        <input type="email" id="comment-email" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="comment-content">评论内容</label>
+                                        <textarea id="comment-content" rows="5" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn">提交评论</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧边栏 -->
+                <div style="flex: 1;">
+                    <!-- 作者信息 -->
+                    <div class="sidebar">
+                        <h3 class="sidebar-title">作者信息</h3>
+                        <div class="author-info">
+                            <img src="https://via.placeholder.com/100" alt="作者头像" class="author-avatar">
+                            <h4 class="author-name">李四</h4>
+                            <p class="author-bio">资深Java开发工程师，拥有10年Java开发经验，热爱分享技术知识。</p>
+                            <div class="author-social">
+                                <a href="#"><i class="fab fa-github"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                                <a href="#"><i class="fab fa-linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 相关文章 -->
+                    <div class="sidebar">
+                        <h3 class="sidebar-title">相关文章</h3>
+                        <ul class="related-posts">
+                            <li>
+                                <a href="#">
+                                    <div class="related-post-image">
+                                        <img src="https://via.placeholder.com/50" alt="相关文章图片">
+                                    </div>
+                                    <div class="related-post-info">
+                                        <h4>Java 17新特性详解</h4>
+                                        <span>2022-03-15</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <div class="related-post-image">
+                                        <img src="https://via.placeholder.com/50" alt="相关文章图片">
+                                    </div>
+                                    <div class="related-post-info">
+                                        <h4>Java并发编程最佳实践</h4>
+                                        <span>2023-01-20</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <div class="related-post-image">
+                                        <img src="https://via.placeholder.com/50" alt="相关文章图片">
+                                    </div>
+                                    <div class="related-post-info">
+                                        <h4>Java性能优化技巧</h4>
+                                        <span>2023-04-10</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- 热门标签 -->
+                    <div class="sidebar">
+                        <h3 class="sidebar-title">热门标签</h3>
+                        <div class="tag-cloud">
+                            <a href="#" style="font-size: 22px;">Java</a>
+                            <a href="#" style="font-size: 18px;">Spring</a>
+                            <a href="#" style="font-size: 20px;">编程</a>
+                            <a href="#" style="font-size: 16px;">MySQL</a>
+                            <a href="#" style="font-size: 14px;">Redis</a>
+                            <a href="#" style="font-size: 19px;">Web</a>
+                            <a href="#" style="font-size: 15px;">算法</a>
+                            <a href="#" style="font-size: 17px;">架构</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">关于博客</h3>
+                    <p>这是一个基于Spring Boot 2和Java 21开发的个人博客管理系统，提供了丰富的博客管理功能。</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-weixin"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">首页</a></li>
+                        <li><a href="categories.html">分类</a></li>
+                        <li><a href="archives.html">归档</a></li>
+                        <li><a href="about.html">关于我</a></li>
+                        <li><a href="contact.html">联系我</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">联系方式</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-envelope"></i> email@example.com</li>
+                        <li><i class="fas fa-phone"></i> +86 123 4567 8901</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 北京市海淀区</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2023 个人博客管理系统. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+</body>
+</html>
